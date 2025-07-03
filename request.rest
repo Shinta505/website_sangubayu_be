@@ -1,0 +1,91 @@
+### ✅ Get semua produk
+GET http://localhost:5000/api/produk
+Content-Type: application/json
+
+###
+
+### ✅ Get produk by ID
+GET http://localhost:5000/api/produk/1
+Content-Type: application/json
+
+###
+
+### ✅ Tambah produk baru
+POST http://localhost:5000/api/produk
+Content-Type: application/json
+
+{
+  "nama_produk": "Kopi Desa",
+  "deskripsi_produk": "Kopi hitam asli dari Sangubanyu.",
+  "harga_produk": 15000,
+  "stok_produk": 50,
+  "gambar_produk": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjQnnH3-zSvmpYl8LmE7J-vTrR94DcYQTnGpG88Pn57GkDVzXDJfw7MOqHYSLqAo-W41_XLdf0s6CUfpwAKuHITLpeXtJ-z2IN8QXdbI9PJNGpl0Yvg-Ir6nrIUqqRiKtQnR8pt5fnjRrMX/s1280/WhatsApp+Image+2020-10-10+at+21.49.18.jpeg",
+  "id_umkm": 1
+}
+
+###
+
+### ✅ Update produk (by ID)
+PUT http://localhost:5000/api/produk/1
+Content-Type: application/json
+
+{
+  "nama_produk": "Kopi Sangubanyu Premium",
+  "deskripsi_produk": "Kopi hitam asli dari Sangubanyu - versi premium.",
+  "harga_produk": 20000,
+  "stok_produk": 40,
+  "gambar_produk": "https://asset-2.tstatic.net/tribunjatimtravel/foto/bank/images/kopi-uthek-khas-desa-banjar-banyuwangi.jpg",
+  "id_umkm": 1
+}
+
+###
+
+### ✅ Hapus produk (by ID)
+DELETE http://localhost:5000/api/produk/1
+Content-Type: application/json
+
+###
+
+### ✅ Get semua UMKM
+GET http://localhost:5000/api/umkm
+Content-Type: application/json
+
+###
+
+### ✅ Get UMKM by ID
+GET http://localhost:5000/api/umkm/1
+Content-Type: application/json
+
+###
+
+### ✅ Tambah UMKM baru
+POST http://localhost:5000/api/umkm
+Content-Type: application/json
+
+{
+  "nama_umkm": "UMKM Kopi Sangubanyu",
+  "pemilik_umkm": "Pak Darto",
+  "deskripsi_umkm": "Mengolah kopi dari petani lokal.",
+  "alamat_umkm": "Dusun Krajan, Desa Sangubanyu",
+  "kontak_umkm": "081234567890"
+}
+
+###
+
+### ✅ Update UMKM
+PUT http://localhost:5000/api/umkm/1
+Content-Type: application/json
+
+{
+  "nama_umkm": "UMKM Kopi Sangubanyu Update",
+  "pemilik_umkm": "Pak Darto",
+  "deskripsi_umkm": "Update: Kopi lokal unggulan.",
+  "alamat_umkm": "Dusun Krajan, Desa Sangubanyu",
+  "kontak_umkm": "081234567890"
+}
+
+###
+
+### ✅ Hapus UMKM
+DELETE http://localhost:5000/api/umkm/1
+Content-Type: application/json

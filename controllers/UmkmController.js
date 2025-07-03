@@ -54,12 +54,19 @@ async function updateUmkm(req, res) {
 }
 
 // DELETE
-async function  deleteUmkm(req, res) {
+async function deleteUmkm(req, res) {
     try {
+        // 1. Hapus semua produk yang terkait dengan UMKM ini terlebih dahulu
         await Produk.destroy({
             where: { id_umkm: req.params.id_umkm }
         });
-        res.status(200).json({ message: 'UMKM deleted successfully' });
+
+        // 2. Setelah itu, hapus data UMKM itu sendiri
+        await Umkm.destroy({
+            where: { id_umkm: req.params.id_umkm }
+        });
+
+        res.status(200).json({ message: 'UMKM and associated products deleted successfully' });
     } catch (error) {
         console.log(error.message);
         res.status(500).json({ msg: "Terjadi kesalahan server" });

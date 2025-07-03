@@ -1,32 +1,18 @@
-// import { Sequelize } from "sequelize";
-// import dotenv from "dotenv";
+import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
 
-// dotenv.config();
+dotenv.config();
 
-// const DB_NAME = process.env.DB_NAME;
-// const DB_USERNAME = process.env.DB_USERNAME;
-// const DB_PASSWORD = process.env.DB_PASSWORD;
-// const DB_HOST = process.env.DB_HOST;
-
-// const db = new Sequelize(DB_NAME, DB_USERNAME, DB_PASSWORD, {
-//   host: DB_HOST,
-//   dialect: "mysql",
-// });
-
-// export default db;
-
-const { Pool } = require('pg');
-
-const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL + "sslmode: require",
+const db = new Sequelize(process.env.POSTGRES_URL, {
+  dialect: "postgres",
+  protocol: "postgres",
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false // Necessary for Vercel Postgres/Heroku
+    }
+  },
+  logging: false // Optional: set to console.log to see SQL queries
 });
 
-pool.connect((err) => {
-  if (err) {
-    console.error('Database connection error:', err.stack);
-  } else {
-    console.log('Connected to the database');
-  }
-}); 
-
-module.exports = pool;
+export default db;

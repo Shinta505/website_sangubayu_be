@@ -1,4 +1,4 @@
-import Umkm  from '../models/ProdukModel.js';
+import Umkm  from '../models/UmkmModel.js';
 
 // GET
 async function getAllUmkm(req, res) {

@@ -1,16 +1,32 @@
-import { Sequelize } from "sequelize";
-import dotenv from "dotenv";
+// import { Sequelize } from "sequelize";
+// import dotenv from "dotenv";
 
-dotenv.config();
+// dotenv.config();
 
-const DB_NAME = process.env.DB_NAME;
-const DB_USERNAME = process.env.DB_USERNAME;
-const DB_PASSWORD = process.env.DB_PASSWORD;
-const DB_HOST = process.env.DB_HOST;
+// const DB_NAME = process.env.DB_NAME;
+// const DB_USERNAME = process.env.DB_USERNAME;
+// const DB_PASSWORD = process.env.DB_PASSWORD;
+// const DB_HOST = process.env.DB_HOST;
 
-const db = new Sequelize(DB_NAME, DB_USERNAME, DB_PASSWORD, {
-  host: DB_HOST,
-  dialect: "mysql",
+// const db = new Sequelize(DB_NAME, DB_USERNAME, DB_PASSWORD, {
+//   host: DB_HOST,
+//   dialect: "mysql",
+// });
+
+// export default db;
+
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URL + "sslmode: require",
 });
 
-export default db;
+pool.connect((err) => {
+  if (err) {
+    console.error('Database connection error:', err.stack);
+  } else {
+    console.log('Connected to the database');
+  }
+}); 
+
+module.exports = pool;

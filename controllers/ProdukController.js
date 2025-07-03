@@ -48,6 +48,11 @@ async function createProduk(req, res) {
             id_umkm,
         } = req.body;
 
+        // Validasi input
+        if (!nama_produk || !deskripsi_produk || !harga_produk || !stok_produk || !id_umkm) {
+            return res.status(400).json({ msg: "Harap isi semua bidang yang diperlukan." });
+        }
+
         // Ambil data umkm
         const umkm = await Umkm.findByPk(id_umkm);
         if (!umkm) {

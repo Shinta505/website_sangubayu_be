@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #343a40;
+            --primary-color: #007bff;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --code-bg: #e9ecef;
+            --code-text: #212529;
+            --tag-get: #007bff;
+            --tag-post: #28a745;
+            --tag-put: #fd7e14;
+            --tag-delete: #dc3545;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
+
+        .base-url {
+            background-color: var(--code-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            text-align: center;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .base-url code {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .api-section {
+            background: var(--card-bg);
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .api-header {
+            padding: 1rem 1.5rem;
+            background-color: var(--bg-color);
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .api-header:hover {
+            background-color: #e9ecef;
+        }
+
+        .api-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .api-header .toggle-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .api-section.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .api-content {
+            padding: 1.5rem;
+            display: grid;
+            gap: 1.5rem;
+            transition: all 0.3s ease-in-out;
+            max-height: 5000px;
+            /* Large enough to not clip content */
+        }
+
+        .api-section.collapsed .api-content {
+            padding-top: 0;
+            padding-bottom: 0;
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .api-endpoint {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 6px var(--shadow-color);
+        }
+
+        .endpoint-summary {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .endpoint-method {
+            font-weight: 700;
+            padding: 0.25rem 0.6rem;
+            border-radius: 5px;
+            color: #fff;
+            margin-right: 1rem;
+            font-size: 0.9rem;
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .endpoint-method.GET {
+            background-color: var(--tag-get);
+        }
+
+        .endpoint-method.POST {
+            background-color: var(--tag-post);
+        }
+
+        .endpoint-method.PUT {
+            background-color: var(--tag-put);
+        }
+
+        .endpoint-method.DELETE {
+            background-color: var(--tag-delete);
+        }
+
+        .endpoint-path {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .endpoint-description {
+            flex-grow: 1;
+            text-align: right;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .endpoint-details {
+            display: none;
+            padding: 1rem;
+            background-color: #fff;
+        }
+
+        .endpoint-details h4 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.25rem;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 1rem;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.85rem;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .endpoint-summary {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .endpoint-method {
+                margin-bottom: 0.5rem;
+            }
+
+            .endpoint-description {
+                text-align: left;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Sangu Bayu API</h1>
+            <p>Dokumentasi Lengkap untuk Mengelola UMKM dan Produk</p>
+        </header>
+
+        <div class="base-url">
+            <strong>Base URL:</strong> <code>/api</code>
+        </div>
+        
+        <div class="api-section">
+            <div class="api-header">
+                <h2>UMKM API</h2>
+                <div class="toggle-icon">▾</div>
+            </div>
+            <div class="api-content">
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method GET">GET</span>
+                        <span class="endpoint-path">/umkm</span>
+                        <span class="endpoint-description">Mendapatkan semua data UMKM</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Deskripsi</h4>
+                        <p>Mengambil daftar semua UMKM yang terdaftar.</p>
+                        <h4>Contoh Response Sukses (200 OK)</h4>
+                        <pre><code>[
+    {
+        "id_umkm": 1,
+        "nama_umkm": "Contoh UMKM",
+        "pemilik_umkm": "John Doe",
+        "deskripsi_umkm": "Deskripsi singkat UMKM.",
+        "alamat_umkm": "Jalan Contoh No. 123",
+        "kontak_umkm": "081234567890"
+    }
+]</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method GET">GET</span>
+                        <span class="endpoint-path">/umkm/:id_umkm</span>
+                        <span class="endpoint-description">Mendapatkan UMKM berdasarkan ID</span>
+                    </div>
+                    <div class="endpoint-details">
+                         <h4>Deskripsi</h4>
+                        <p>Mengambil detail UMKM spesifik berdasarkan ID.</p>
+                        <h4>Contoh Response Sukses (200 OK)</h4>
+                        <pre><code>
+    {
+        "id_umkm": 1,
+        "nama_umkm": "Contoh UMKM",
+        "pemilik_umkm": "John Doe",
+        "deskripsi_umkm": "Deskripsi singkat UMKM.",
+        "alamat_umkm": "Jalan Contoh No. 123",
+        "kontak_umkm": "081234567890"
+    }
+</code></pre>
+                        <h4>Contoh Response Error (404 Not Found)</h4>
+                        <pre><code>{
+    "message": "UMKM not found"
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method POST">POST</span>
+                        <span class="endpoint-path">/umkm</span>
+                        <span class="endpoint-description">Membuat UMKM baru</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Request Body</h4>
+                        <pre><code>{
+    "nama_umkm": "UMKM Baru",
+    "pemilik_umkm": "Jane Doe",
+    "deskripsi_umkm": "Deskripsi UMKM baru.",
+    "alamat_umkm": "Jalan Baru No. 456",
+    "kontak_umkm": "089876543210"
+}</code></pre>
+                        <h4>Contoh Response Sukses (201 Created)</h4>
+                        <pre><code>{
+    "message": "UMKM created successfully"
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method PUT">PUT</span>
+                        <span class="endpoint-path">/umkm/:id_umkm</span>
+                        <span class="endpoint-description">Memperbarui data UMKM</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Request Body</h4>
+                        <p>Kirim hanya field yang ingin diperbarui.</p>
+                        <pre><code>{
+    "nama_umkm": "Update Nama UMKM"
+}</code></pre>
+                        <h4>Contoh Response Sukses (200 OK)</h4>
+                        <pre><code>{
+    "message": "UMKM updated successfully"
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method DELETE">DELETE</span>
+                        <span class="endpoint-path">/umkm/:id_umkm</span>
+                        <span class="endpoint-description">Menghapus UMKM</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Contoh Response Sukses (200 OK)</h4>
+                        <pre><code>{
+    "message": "UMKM deleted successfully"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="api-section">
+            <div class="api-header">
+                <h2>Produk API</h2>
+                <div class="toggle-icon">▾</div>
+            </div>
+            <div class="api-content">
+
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method GET">GET</span>
+                        <span class="endpoint-path">/produk</span>
+                        <span class="endpoint-description">Mendapatkan semua produk</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Deskripsi</h4>
+                        <p>Mengambil daftar semua produk yang terdaftar.</p>
+                        <h4>Contoh Response Sukses (200 OK)</h4>
+                        <pre><code>[
+    {
+        "id_produk": 1,
+        "nama_produk": "Produk Contoh",
+        "deskripsi_produk": "Deskripsi produk contoh.",
+        "harga_produk": 50000,
+        "stok_produk": 100,
+        "gambar_produk": "url/gambar.jpg",
+        "id_umkm": 1,
+        "umkm": {
+            "nama_umkm": "Contoh UMKM",
+            "kontak_umkm": "081234567890"
+        }
+    }
+]</code></pre>
+                    </div>
+                </div>
+                
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method GET">GET</span>
+                        <span class="endpoint-path">/produk/:id_produk</span>
+                        <span class="endpoint-description">Mendapatkan produk berdasarkan ID</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Deskripsi</h4>
+                        <p>Mengambil detail produk spesifik berdasarkan ID.</p>
+                        <h4>Contoh Response Sukses (200 OK)</h4>
+                        <pre><code>{
+    "id_produk": 1,
+    "nama_produk": "Produk Contoh",
+    "deskripsi_produk": "Deskripsi produk contoh.",
+    "harga_produk": 50000,
+    "stok_produk": 100,
+    "gambar_produk": "url/gambar.jpg",
+    "id_umkm": 1,
+    "umkm": {
+        "nama_umkm": "Contoh UMKM",
+        "kontak_umkm": "081234567890"
+    }
+}</code></pre>
+                        <h4>Contoh Response Error (404 Not Found)</h4>
+                        <pre><code>{
+    "message": "Produk not found"
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method POST">POST</span>
+                        <span class="endpoint-path">/produk</span>
+                        <span class="endpoint-description">Membuat produk baru</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Request Body</h4>
+                        <pre><code>{
+    "nama_produk": "Produk Baru",
+    "deskripsi_produk": "Deskripsi produk baru.",
+    "harga_produk": 75000,
+    "stok_produk": 50,
+    "gambar_produk": "url/gambar_baru.jpg",
+    "id_umkm": 1
+}</code></pre>
+                        <h4>Contoh Response Sukses (201 Created)</h4>
+                        <pre><code>{
+    "message": "Produk created successfully"
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method PUT">PUT</span>
+                        <span class="endpoint-path">/produk/:id_produk</span>
+                        <span class="endpoint-description">Memperbarui data produk</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Request Body</h4>
+                        <p>Kirim hanya field yang ingin diperbarui.</p>
+                        <pre><code>{
+    "harga_produk": 80000,
+    "stok_produk": 45
+}</code></pre>
+                        <h4>Contoh Response Sukses (200 OK)</h4>
+                        <pre><code>{
+    "message": "Produk updated successfully"
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method DELETE">DELETE</span>
+                        <span class="endpoint-path">/produk/:id_produk</span>
+                        <span class="endpoint-description">Menghapus produk</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Contoh Response Sukses (200 OK)</h4>
+                        <pre><code>{
+    "message": "Produk deleted successfully"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const apiSections = document.querySelectorAll('.api-section');
+            const apiEndpoints = document.querySelectorAll('.api-endpoint .endpoint-summary');
+
+            apiSections.forEach(section => {
+                const header = section.querySelector('.api-header');
+                header.addEventListener('click', () => {
+                    section.classList.toggle('collapsed');
+                });
+                // Collapse all sections by default
+                section.classList.add('collapsed');
+            });
+
+            apiEndpoints.forEach(endpoint => {
+                endpoint.addEventListener('click', () => {
+                    const details = endpoint.nextElementSibling;
+                    if (details.style.display === 'block') {
+                        details.style.display = 'none';
+                    } else {
+                        details.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

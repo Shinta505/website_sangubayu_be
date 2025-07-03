@@ -27,6 +27,10 @@ const Umkm = dbContext.define('umkm', {
         type: DataTypes.STRING,
         allowNull: true,
     },
+    peta_umkm: {
+        type: DataTypes.TEXT, // Gunakan TEXT untuk menampung kode iframe
+        allowNull: true,
+    },
 }, {
     tableName: 'umkm',
     freezeTableName: true,

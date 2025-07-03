@@ -1,18 +1,20 @@
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
+import pg from 'pg';
 
 dotenv.config();
 
 const db = new Sequelize(process.env.POSTGRES_URL, {
   dialect: "postgres",
   protocol: "postgres",
+  dialectModule: pg, // <-- Tambahkan baris ini
   dialectOptions: {
     ssl: {
       require: true,
-      rejectUnauthorized: false // Necessary for Vercel Postgres/Heroku
+      rejectUnauthorized: false
     }
   },
-  logging: false // Optional: set to console.log to see SQL queries
+  logging: false
 });
 
 export default db;

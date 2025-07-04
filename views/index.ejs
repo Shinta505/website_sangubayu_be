@@ -483,6 +483,111 @@
             </div>
         </div>
 
+        <div class="api-section">
+            <div class="api-header">
+                <h2>Struktur Organisasi API</h2>
+                <div class="toggle-icon">▾</div>
+            </div>
+            <div class="api-content">
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method GET">GET</span>
+                        <span class="endpoint-path">/struktur-organisasi</span>
+                        <span class="endpoint-description">Mendapatkan semua data struktur organisasi</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Deskripsi</h4>
+                        <p>Mengambil daftar semua struktur organisasi yang terdaftar.</p>
+                        <h4>Contoh Response Sukses (200 OK)</h4>
+                        <pre><code>[
+    {
+        "id_struktur": 1,
+        "nama_jabatan": "Ketua",
+        "nama_pejabat": "Budi Santoso",
+        "foto_pejabat": "url/foto.jpg"
+    }
+]</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method GET">GET</span>
+                        <span class="endpoint-path">/struktur-organisasi/:id_struktur</span>
+                        <span class="endpoint-description">Mendapatkan struktur organisasi berdasarkan ID</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Deskripsi</h4>
+                        <p>Mengambil detail spesifik dari struktur organisasi berdasarkan ID.</p>
+                        <h4>Contoh Response Sukses (200 OK)</h4>
+                        <pre><code>{
+    "id_struktur": 1,
+    "nama_jabatan": "Ketua",
+    "nama_pejabat": "Budi Santoso",
+    "foto_pejabat": "url/foto.jpg"
+}</code></pre>
+                        <h4>Contoh Response Error (404 Not Found)</h4>
+                        <pre><code>{
+    "message": "Struktur Organisasi not found"
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method POST">POST</span>
+                        <span class="endpoint-path">/struktur-organisasi</span>
+                        <span class="endpoint-description">Membuat data struktur organisasi baru</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Request Body</h4>
+                        <pre><code>{
+    "nama_jabatan": "Sekretaris",
+    "nama_pejabat": "Siti Aminah",
+    "foto_pejabat": "url/foto_baru.jpg"
+}</code></pre>
+                        <h4>Contoh Response Sukses (201 Created)</h4>
+                        <pre><code>{
+    "message": "Struktur Organisasi created successfully"
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method PUT">PUT</span>
+                        <span class="endpoint-path">/struktur-organisasi/:id_struktur</span>
+                        <span class="endpoint-description">Memperbarui data struktur organisasi</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Request Body</h4>
+                        <p>Kirim hanya field yang ingin diperbarui.</p>
+                        <pre><code>{
+    "nama_pejabat": "Siti Aminah Rahayu"
+}</code></pre>
+                        <h4>Contoh Response Sukses (200 OK)</h4>
+                        <pre><code>{
+    "message": "Struktur Organisasi updated successfully"
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-summary">
+                        <span class="endpoint-method DELETE">DELETE</span>
+                        <span class="endpoint-path">/struktur-organisasi/:id_struktur</span>
+                        <span class="endpoint-description">Menghapus data struktur organisasi</span>
+                    </div>
+                    <div class="endpoint-details">
+                        <h4>Contoh Response Sukses (200 OK)</h4>
+                        <pre><code>{
+    "message": "Struktur Organisasi deleted successfully"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>

@@ -33,6 +33,16 @@ app.use('/api', StrukturOrganisasiRoute);
 app.use('/api', UmkmRoute);
 app.use('/api', ProdukRoute);
 
+// Middleware untuk menangani 404 Not Found
+app.use((req, res, next) => {
+    res.status(404).render('error', { status: 404, message: 'Halaman tidak ditemukan' });
+});
+
+// Middleware untuk menangani error lainnya
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).render('error', { status: 500, message: 'Terjadi kesalahan pada server' });
+});
 
 // Server
 app.listen(PORT, '0.0.0.0', () => {

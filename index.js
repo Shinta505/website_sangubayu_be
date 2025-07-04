@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import AuthRoute from './routes/AuthRoute.js';
 import StrukturOrganisasiRoute from './routes/StrukturOrganisasiRoute.js';
 import UmkmRoute from './routes/UmkmRoute.js';
 import ProdukRoute from './routes/ProdukRoute.js';
@@ -29,6 +30,7 @@ app.get('/', (req, res) => {
 });
 
 // Routes API
+app.use('/api', AuthRoute);
 app.use('/api', StrukturOrganisasiRoute);
 app.use('/api', UmkmRoute);
 app.use('/api', ProdukRoute);

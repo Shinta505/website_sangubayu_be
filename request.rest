@@ -89,3 +89,45 @@ Content-Type: application/json
 ### ✅ Hapus UMKM
 DELETE http://localhost:5000/api/umkm/1
 Content-Type: application/json
+
+###
+
+### ✅ Get semua Struktur Organisasi
+GET http://localhost:5000/api/struktur-organisasi
+Content-Type: application/json
+
+###
+
+### ✅ Get Strutur Organisasi by ID
+GET http://localhost:5000/api/struktur-organisasi/1
+Content-Type: application/json
+
+###
+
+### ✅ Tambah Struktur Organisasi baru
+POST http://localhost:5000/api/struktur-organisasi
+Content-Type: application/json
+
+{
+  "nama_jabatan": "Kepala Desa Sangubanyu",
+  "nama_pejabat": "H. Bambang Gunandi",
+  "foto_pejabat": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8DFzOc-47s2b68ps5D_3KXtQ2Np5IMoEbaw&s.jpg"
+}
+
+###
+
+### ✅ Update UMKM
+PUT http://localhost:5000/api/struktur-organisasi/1
+Content-Type: application/json
+
+{
+  "nama_jabatan": "Kepala Desa Sangubanyu",
+  "nama_pejabat": "Pak Bambang Gunandi",
+  "foto_pejabat": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8DFzOc-47s2b68ps5D_3KXtQ2Np5IMoEbaw&s.jpg"
+}
+
+###
+
+### ✅ Hapus UMKM
+DELETE http://localhost:5000/api/struktur-organisasi/1
+Content-Type: application/json

@@ -1,6 +1,20 @@
 import { where } from 'sequelize';
 import Produk from '../models/ProdukModel.js';
 import Umkm from '../models/UmkmModel.js';
+import multer from 'multer';
+import path from 'path';
+
+// Konfigurasi Multer
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ storage: storage });
 
 // GET
 async function getAllProduk(req, res) {
@@ -44,9 +58,10 @@ async function createProduk(req, res) {
             deskripsi_produk,
             harga_produk,
             stok_produk,
-            gambar_produk,
             id_umkm,
         } = req.body;
+
+        const gambar_produk = req.file ? req.file.filename : null;
 
         // Validasi input
         if (!nama_produk || !deskripsi_produk || !harga_produk || !stok_produk || !id_umkm) {
@@ -85,9 +100,10 @@ async function updateProduk(req, res) {
             deskripsi_produk,
             harga_produk,
             stok_produk,
-            gambar_produk,
             id_umkm,
         } = req.body;
+
+        const gambar_produk = req.file ? req.file.filename : req.body.gambar_produk;
 
         // Ambil data umkm
         const umkm = await Umkm.findByPk(id_umkm);
@@ -95,7 +111,14 @@ async function updateProduk(req, res) {
             return res.status(404).json({ message: 'UMKM not found' });
         }
 
-        await Produk.update(req.body, {
+        await Produk.update({
+            nama_produk,
+            deskripsi_produk,
+            harga_produk,
+            stok_produk,
+            gambar_produk,
+            id_umkm,
+        }, {
             where: { id_produk: id_produk }
         });
         res.status(200).json({ message: 'Produk updated successfully' });
@@ -124,5 +147,6 @@ export {
     getProdukById,
     createProduk,
     updateProduk,
-    deleteProduk
+    deleteProduk,
+    upload
 };

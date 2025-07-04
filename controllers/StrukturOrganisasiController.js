@@ -1,4 +1,18 @@
 import StrukturOrganisasi from "../models/StrukturOrganisasiModel.js";
+import multer from 'multer';
+import path from 'path';
+
+// Konfigurasi Multer untuk foto pejabat
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ storage: storage });
 
 // GET all Struktur Organisasi
 async function getAllStrukturOrganisasi(req, res) {
@@ -12,7 +26,7 @@ async function getAllStrukturOrganisasi(req, res) {
 }
 
 // GET Struktur Organisasi by ID
-async function getStrukturOrganisasiById(req, res) {    
+async function getStrukturOrganisasiById(req, res) {
     const id_struktur = req.params.id_struktur;
     try {
         const strukturOrganisasi = await StrukturOrganisasi.findOne({ where: { id_struktur: id_struktur } });
@@ -28,10 +42,11 @@ async function getStrukturOrganisasiById(req, res) {
 }
 
 // CREATE Struktur Organisasi
-async function createStrukturOrganisasi(req, res) {   
+async function createStrukturOrganisasi(req, res) {
     try {
-        const inputResult = req.body;
-        await StrukturOrganisasi.create(inputResult);
+        const { nama_jabatan, nama_pejabat } = req.body;
+        const foto_pejabat = req.file ? req.file.filename : null;
+        await StrukturOrganisasi.create({ nama_jabatan, nama_pejabat, foto_pejabat });
         res.status(201).json({ message: 'Struktur Organisasi created successfully' });
     } catch (error) {
         console.error(error.message);
@@ -42,7 +57,9 @@ async function createStrukturOrganisasi(req, res) {
 // UPDATE Struktur Organisasi
 async function updateStrukturOrganisasi(req, res) {
     try {
-        await StrukturOrganisasi.update(req.body, {
+        const { nama_jabatan, nama_pejabat } = req.body;
+        const foto_pejabat = req.file ? req.file.filename : req.body.foto_pejabat;
+        await StrukturOrganisasi.update({ nama_jabatan, nama_pejabat, foto_pejabat }, {
             where: { id_struktur: req.params.id_struktur }
         });
         res.status(200).json({ message: 'Struktur Organisasi updated successfully' });
@@ -57,7 +74,7 @@ async function deleteStrukturOrganisasi(req, res) {
     try {
         const id_struktur = req.params.id_struktur;
         const strukturOrganisasi = await StrukturOrganisasi.findOne({ where: { id_struktur: id_struktur } });
-        
+
         if (!strukturOrganisasi) {
             return res.status(404).json({ message: 'Struktur Organisasi not found' });
         }
@@ -77,5 +94,6 @@ export {
     getStrukturOrganisasiById,
     createStrukturOrganisasi,
     updateStrukturOrganisasi,
-    deleteStrukturOrganisasi
+    deleteStrukturOrganisasi,
+    upload
 }

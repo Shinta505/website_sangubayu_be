@@ -4,7 +4,8 @@ import {
   getProdukById,
   createProduk,
   updateProduk,
-  deleteProduk
+  deleteProduk,
+  upload
 } from '../controllers/ProdukController.js';
 
 const router = express.Router();
@@ -16,10 +17,10 @@ router.get('/produk', getAllProduk);
 router.get('/produk/:id_produk', getProdukById);
 
 // Route POST tambah produk baru
-router.post('/produk', createProduk);
+router.post('/produk', upload.single('gambar_produk'), createProduk);
 
 // Route PUT update produk
-router.put('/produk/:id_produk', updateProduk);
+router.put('/produk/:id_produk', upload.single('gambar_produk'), updateProduk);
 
 // Route DELETE hapus produk
 router.delete('/produk/:id_produk', deleteProduk);

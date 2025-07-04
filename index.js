@@ -25,6 +25,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static('uploads'));
 
 // Rute untuk menampilkan dokumentasi API
 app.get('/', (req, res) => {
@@ -50,5 +51,5 @@ app.use((err, req, res, next) => {
 
 // Server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Server is running on port ${PORT}`);
+    console.log(`✅ Server is running on port ${PORT}`);
 });

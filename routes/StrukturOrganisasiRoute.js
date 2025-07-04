@@ -4,8 +4,9 @@ import {
     getStrukturOrganisasiById,
     createStrukturOrganisasi,
     updateStrukturOrganisasi,
-    deleteStrukturOrganisasi
-} from '../controllers/StrukturOrganisasiController.js';    
+    deleteStrukturOrganisasi,
+    upload
+} from '../controllers/StrukturOrganisasiController.js';
 
 const router = express.Router();
 
@@ -16,10 +17,10 @@ router.get('/struktur-organisasi', getAllStrukturOrganisasi);
 router.get('/struktur-organisasi/:id_struktur', getStrukturOrganisasiById);
 
 // Route POST tambah struktur organisasi baru
-router.post('/struktur-organisasi', createStrukturOrganisasi);
+router.post('/struktur-organisasi', upload.single('foto_pejabat'), createStrukturOrganisasi);
 
 // Route PUT update struktur organisasi
-router.put('/struktur-organisasi/:id_struktur', updateStrukturOrganisasi);
+router.put('/struktur-organisasi/:id_struktur', upload.single('foto_pejabat'), updateStrukturOrganisasi);
 
 // Route DELETE hapus struktur organisasi
 router.delete('/struktur-organisasi/:id_struktur', deleteStrukturOrganisasi);

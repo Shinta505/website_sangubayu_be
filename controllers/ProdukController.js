@@ -1,31 +1,19 @@
-import { where } from 'sequelize';
 import Produk from '../models/ProdukModel.js';
 import Umkm from '../models/UmkmModel.js';
+import { put } from '@vercel/blob';
 import multer from 'multer';
-import path from 'path';
 
-// Konfigurasi Multer
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
+// Konfigurasi Multer untuk memproses file di memori, bukan di disk
+const upload = multer({ storage: multer.memoryStorage() });
 
-const upload = multer({ storage: storage });
-
-// GET
+// GET all Produk
 async function getAllProduk(req, res) {
     try {
         const produk = await Produk.findAll({
-            include: [
-                {
-                    model: Umkm,
-                    attributes: ['nama_umkm', 'kontak_umkm']
-                }
-            ]
+            include: [{
+                model: Umkm,
+                attributes: ['nama_umkm', 'kontak_umkm']
+            }]
         });
         res.status(200).json(produk);
     } catch (error) {
@@ -34,11 +22,14 @@ async function getAllProduk(req, res) {
     }
 }
 
-// GET by ID
+// GET Produk by ID
 async function getProdukById(req, res) {
     const id_produk = req.params.id_produk;
     try {
-        const produk = await Produk.findOne({ where: { id_produk: id_produk }, include: { model: Umkm, attributes: ["nama_umkm", "kontak_umkm"] }, });
+        const produk = await Produk.findOne({
+            where: { id_produk: id_produk },
+            include: { model: Umkm, attributes: ["nama_umkm", "kontak_umkm"] },
+        });
         if (produk) {
             res.status(200).json(produk);
         } else {
@@ -61,35 +52,45 @@ async function createProduk(req, res) {
             id_umkm,
         } = req.body;
 
-        const gambar_produk = req.file ? req.file.filename : null;
-
         // Validasi input
         if (!nama_produk || !deskripsi_produk || !harga_produk || !stok_produk || !id_umkm) {
             return res.status(400).json({ msg: "Harap isi semua bidang yang diperlukan." });
         }
 
-        // Ambil data umkm
+        // Cek UMKM
         const umkm = await Umkm.findByPk(id_umkm);
         if (!umkm) {
             return res.status(404).json({ message: 'UMKM not found' });
         }
 
-        // Buat produk baru dengan relasi ke UMKM
+        let gambar_produk_url = null;
+        if (req.file) {
+            // Unggah file ke Vercel Blob
+            const { url } = await put(
+                `produk/${Date.now()}_${req.file.originalname}`,
+                req.file.buffer,
+                { access: 'public' }
+            );
+            gambar_produk_url = url;
+        }
+
+        // Buat produk baru dan simpan URL gambar
         await Produk.create({
             nama_produk,
             deskripsi_produk,
             harga_produk,
             stok_produk,
-            gambar_produk,
+            gambar_produk: gambar_produk_url, // Simpan URL dari Vercel Blob
             id_umkm,
         });
 
-        res.status(201).json({ message: 'Produk created successfully' });
+        res.status(201).json({ message: 'Produk berhasil dibuat' });
     } catch (error) {
-        console.log(error.message);
+        console.log("Error creating produk:", error.message);
         res.status(500).json({ msg: "Terjadi kesalahan server" });
     }
 }
+
 
 // UPDATE
 async function updateProduk(req, res) {
@@ -103,12 +104,21 @@ async function updateProduk(req, res) {
             id_umkm,
         } = req.body;
 
-        const gambar_produk = req.file ? req.file.filename : req.body.gambar_produk;
-
-        // Ambil data umkm
+        // Cek UMKM
         const umkm = await Umkm.findByPk(id_umkm);
         if (!umkm) {
             return res.status(404).json({ message: 'UMKM not found' });
+        }
+
+        let gambar_produk_url = req.body.gambar_produk; // Default ke URL yang ada
+        if (req.file) {
+            // Jika ada file baru, unggah ke Vercel Blob
+            const { url } = await put(
+                `produk/${Date.now()}_${req.file.originalname}`,
+                req.file.buffer,
+                { access: 'public' }
+            );
+            gambar_produk_url = url;
         }
 
         await Produk.update({
@@ -116,14 +126,14 @@ async function updateProduk(req, res) {
             deskripsi_produk,
             harga_produk,
             stok_produk,
-            gambar_produk,
+            gambar_produk: gambar_produk_url, // Simpan URL baru atau yang lama
             id_umkm,
         }, {
             where: { id_produk: id_produk }
         });
-        res.status(200).json({ message: 'Produk updated successfully' });
+        res.status(200).json({ message: 'Produk berhasil diperbarui' });
     } catch (error) {
-        console.log(error.message);
+        console.log("Error updating produk:", error.message);
         res.status(500).json({ msg: "Terjadi kesalahan server" });
     }
 }
@@ -132,10 +142,11 @@ async function updateProduk(req, res) {
 async function deleteProduk(req, res) {
     try {
         const id_produk = req.params.id_produk;
+        // Opsional: Anda bisa menambahkan logika untuk menghapus gambar dari Vercel Blob di sini
         await Produk.destroy({
-            where: { id_produk: req.params.id_produk }
+            where: { id_produk: id_produk }
         });
-        res.status(200).json({ message: 'Produk deleted successfully' });
+        res.status(200).json({ message: 'Produk berhasil dihapus' });
     } catch (error) {
         console.log(error.message);
         res.status(500).json({ msg: "Terjadi kesalahan server" });

@@ -1,18 +1,9 @@
 import StrukturOrganisasi from "../models/StrukturOrganisasiModel.js";
+import { put } from '@vercel/blob';
 import multer from 'multer';
-import path from 'path';
 
-// Konfigurasi Multer untuk foto pejabat
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({ storage: storage });
+// Konfigurasi Multer untuk memproses file di memori
+const upload = multer({ storage: multer.memoryStorage() });
 
 // GET all Struktur Organisasi
 async function getAllStrukturOrganisasi(req, res) {
@@ -45,12 +36,27 @@ async function getStrukturOrganisasiById(req, res) {
 async function createStrukturOrganisasi(req, res) {
     try {
         const { nama_jabatan, nama_pejabat } = req.body;
-        const foto_pejabat = req.file ? req.file.filename : null;
-        await StrukturOrganisasi.create({ nama_jabatan, nama_pejabat, foto_pejabat });
+        let foto_pejabat_url = null;
+
+        if (req.file) {
+            const { url } = await put(
+                `pejabat/${Date.now()}_${req.file.originalname}`,
+                req.file.buffer,
+                { access: 'public' }
+            );
+            foto_pejabat_url = url;
+        }
+
+        await StrukturOrganisasi.create({
+            nama_jabatan,
+            nama_pejabat,
+            foto_pejabat: foto_pejabat_url // Simpan URL dari Vercel Blob
+        });
+
         res.status(201).json({ message: 'Struktur Organisasi created successfully' });
     } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ msg: "Terjadi kesalahan server" });
+        console.error("Error creating struktur organisasi:", error);
+        res.status(500).json({ msg: "Terjadi kesalahan saat membuat data" });
     }
 }
 
@@ -58,14 +64,29 @@ async function createStrukturOrganisasi(req, res) {
 async function updateStrukturOrganisasi(req, res) {
     try {
         const { nama_jabatan, nama_pejabat } = req.body;
-        const foto_pejabat = req.file ? req.file.filename : req.body.foto_pejabat;
-        await StrukturOrganisasi.update({ nama_jabatan, nama_pejabat, foto_pejabat }, {
+        let foto_pejabat_url = req.body.foto_pejabat; // Default ke URL yang ada
+
+        if (req.file) {
+            const { url } = await put(
+                `pejabat/${Date.now()}_${req.file.originalname}`,
+                req.file.buffer,
+                { access: 'public' }
+            );
+            foto_pejabat_url = url;
+        }
+
+        await StrukturOrganisasi.update({
+            nama_jabatan,
+            nama_pejabat,
+            foto_pejabat: foto_pejabat_url
+        }, {
             where: { id_struktur: req.params.id_struktur }
         });
+
         res.status(200).json({ message: 'Struktur Organisasi updated successfully' });
     } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ msg: "Terjadi kesalahan server" });
+        console.error("Error updating struktur organisasi:", error);
+        res.status(500).json({ msg: "Terjadi kesalahan saat memperbarui data" });
     }
 }
 

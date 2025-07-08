@@ -7,6 +7,7 @@ import AuthRoute from './routes/AuthRoute.js';
 import StrukturOrganisasiRoute from './routes/StrukturOrganisasiRoute.js';
 import UmkmRoute from './routes/UmkmRoute.js';
 import ProdukRoute from './routes/ProdukRoute.js';
+import RajaOngkirRoute from './routes/RajaOngkirRoute.js';
 
 // Konfigurasi __dirname untuk ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -37,6 +38,7 @@ app.use('/api', AuthRoute);
 app.use('/api', StrukturOrganisasiRoute);
 app.use('/api', UmkmRoute);
 app.use('/api', ProdukRoute);
+app.use('/api', RajaOngkirRoute); // <-- Tambahkan ini
 
 // Middleware untuk menangani 404 Not Found
 app.use((req, res, next) => {

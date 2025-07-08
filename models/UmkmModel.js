@@ -28,7 +28,7 @@ const Umkm = dbContext.define('umkm', {
         allowNull: true,
     },
     peta_umkm: {
-        type: DataTypes.TEXT, // Gunakan TEXT untuk menampung kode iframe
+        type: DataTypes.TEXT, 
         allowNull: true,
     },
 }, {

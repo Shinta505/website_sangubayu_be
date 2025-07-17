@@ -48,7 +48,7 @@ async function createGallery(req, res) {
         // Simpan data beserta URL gambar ke database
         const inputResult = {
             ...req.body,
-            imageUrl: blob.url // Asumsi kolom di database bernama 'imageUrl'
+            url_gambar: blob.url // Asumsi kolom di database bernama 'url_gambar'
         };
 
         await Gallery.create(inputResult);
@@ -70,24 +70,24 @@ async function updateGallery(req, res) {
             return res.status(404).json({ message: 'Gallery tidak ditemukan' });
         }
 
-        let imageUrl = gallery.imageUrl; // Simpan URL gambar yang lama
+        let url_gambar = gallery.url_gambar; // Simpan URL gambar yang lama
 
         // Jika ada file baru yang diunggah
         if (req.file) {
             // Hapus gambar lama dari Vercel Blob jika ada
-            if (gallery.imageUrl) {
-                await del(gallery.imageUrl);
+            if (gallery.url_gambar) {
+                await del(gallery.url_gambar);
             }
             // Unggah gambar baru
             const blob = await put(req.file.originalname, req.file.buffer, {
                 access: 'public',
             });
-            imageUrl = blob.url; // Gunakan URL gambar yang baru
+            url_gambar = blob.url; // Gunakan URL gambar yang baru
         }
 
         const updateData = {
             ...req.body,
-            imageUrl: imageUrl
+            url_gambar: url_gambar
         };
 
         await Gallery.update(updateData, {
@@ -112,8 +112,8 @@ async function deleteGallery(req, res) {
         }
 
         // Hapus gambar dari Vercel Blob jika URL-nya ada
-        if (gallery.imageUrl) {
-            await del(gallery.imageUrl);
+        if (gallery.url_gambar) {
+            await del(gallery.url_gambar);
         }
 
         // Hapus data dari database

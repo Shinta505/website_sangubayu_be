@@ -40,8 +40,8 @@ async function createGallery(req, res) {
             return res.status(400).json({ msg: "Tidak ada file gambar yang diunggah" });
         }
 
-        // Upload gambar ke Vercel Blob
-        const blob = await put(req.file.originalname, req.file.buffer, {
+        // Upload gambar ke Vercel Blob dalam folder 'galeri'
+        const blob = await put(`galeri/${req.file.originalname}`, req.file.buffer, {
             access: 'public',
         });
 
@@ -78,8 +78,8 @@ async function updateGallery(req, res) {
             if (gallery.url_gambar) {
                 await del(gallery.url_gambar);
             }
-            // Unggah gambar baru
-            const blob = await put(req.file.originalname, req.file.buffer, {
+            // Unggah gambar baru ke Vercel Blob dalam folder 'galeri'
+            const blob = await put(`galeri/${req.file.originalname}`, req.file.buffer, {
                 access: 'public',
             });
             url_gambar = blob.url; // Gunakan URL gambar yang baru

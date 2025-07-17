@@ -7,6 +7,7 @@ import AuthRoute from './routes/AuthRoute.js';
 import StrukturOrganisasiRoute from './routes/StrukturOrganisasiRoute.js';
 import UmkmRoute from './routes/UmkmRoute.js';
 import ProdukRoute from './routes/ProdukRoute.js';
+import Gallery from './routes/GalleryRoute.js';
 
 // Konfigurasi __dirname untuk ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -37,6 +38,7 @@ app.use('/api', AuthRoute);
 app.use('/api', StrukturOrganisasiRoute);
 app.use('/api', UmkmRoute);
 app.use('/api', ProdukRoute);
+app.use('/api', Gallery);
 
 // Middleware untuk menangani 404 Not Found
 app.use((req, res, next) => {
@@ -61,6 +63,7 @@ app.get('/api/sitemap', async (req, res) => {
         { loc: '/html/gor-kwt.html', changefreq: 'monthly', priority: '0.8' },
         { loc: '/html/umkm.html', changefreq: 'weekly', priority: '0.9' },
         { loc: '/html/peta-desa.html', changefreq: 'monthly', priority: '0.7' },
+        { loc: '/html/gallery.html', changefreq: 'weekly', priority: '0.9' }
     ];
     
     // 2. Buat konten XML

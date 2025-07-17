@@ -8,10 +8,6 @@ const Gallery = dbContext.define(
         primaryKey: true,
         autoIncrement: true,
     },
-    nama_gambar: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
     deskripsi_gambar: {
         type: DataTypes.TEXT,
         allowNull: true,

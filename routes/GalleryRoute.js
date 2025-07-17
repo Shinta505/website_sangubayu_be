@@ -5,6 +5,7 @@ import {
     createGallery,
     updateGallery,
     deleteGallery,
+    upload,
 } from '../controllers/GalleryController.js';
 
 const router = express.Router();
@@ -16,10 +17,10 @@ router.get('/gallery', getAllGalleries);
 router.get('/gallery/:id_gallery', getGalleryById);
 
 // Route POST tambah galeri
-router.post('/gallery', createGallery);
+router.post('/gallery', upload.single('url_gambar'), createGallery);
 
 // Route PUT update galeri
-router.put('/gallery/:id_gallery', updateGallery);
+router.put('/gallery/:id_gallery', upload.single('url_gambar'), updateGallery);
 
 // Route DELETE hapus galeri
 router.delete('/gallery/:id_gallery', deleteGallery);

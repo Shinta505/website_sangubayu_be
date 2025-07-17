@@ -1,4 +1,10 @@
 import Gallery from '../models/GalleryModel.js';
+import { put, del } from '@vercel/blob';
+import multer from 'multer';
+
+// Konfigurasi Multer untuk memproses file di memori
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // GET all galleries
 async function getAllGalleries(req, res) {
@@ -12,14 +18,14 @@ async function getAllGalleries(req, res) {
 }
 
 // GET gallery by ID
-async function getGalleryById(req, res) {  
+async function getGalleryById(req, res) {
     const id_gallery = req.params.id_gallery;
     try {
         const gallery = await Gallery.findOne({ where: { id_gallery: id_gallery } });
         if (gallery) {
             res.status(200).json(gallery);
         } else {
-            res.status(404).json({ message: 'Gallery not found' });
+            res.status(404).json({ message: 'Gallery tidak ditemukan' });
         }
     } catch (error) {
         console.error(error.message);
@@ -30,9 +36,23 @@ async function getGalleryById(req, res) {
 // CREATE gallery
 async function createGallery(req, res) {
     try {
-        const inputResult = req.body;
+        if (!req.file) {
+            return res.status(400).json({ msg: "Tidak ada file gambar yang diunggah" });
+        }
+
+        // Upload gambar ke Vercel Blob
+        const blob = await put(req.file.originalname, req.file.buffer, {
+            access: 'public',
+        });
+
+        // Simpan data beserta URL gambar ke database
+        const inputResult = {
+            ...req.body,
+            imageUrl: blob.url // Asumsi kolom di database bernama 'imageUrl'
+        };
+
         await Gallery.create(inputResult);
-        res.status(201).json({ message: 'Gallery created successfully' });
+        res.status(201).json({ message: 'Gallery berhasil dibuat' });
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ msg: "Terjadi kesalahan server" });
@@ -42,10 +62,39 @@ async function createGallery(req, res) {
 // UPDATE gallery
 async function updateGallery(req, res) {
     try {
-        await Gallery.update(req.body, {
+        const gallery = await Gallery.findOne({
             where: { id_gallery: req.params.id_gallery }
         });
-        res.status(200).json({ message: 'Gallery updated successfully' });
+
+        if (!gallery) {
+            return res.status(404).json({ message: 'Gallery tidak ditemukan' });
+        }
+
+        let imageUrl = gallery.imageUrl; // Simpan URL gambar yang lama
+
+        // Jika ada file baru yang diunggah
+        if (req.file) {
+            // Hapus gambar lama dari Vercel Blob jika ada
+            if (gallery.imageUrl) {
+                await del(gallery.imageUrl);
+            }
+            // Unggah gambar baru
+            const blob = await put(req.file.originalname, req.file.buffer, {
+                access: 'public',
+            });
+            imageUrl = blob.url; // Gunakan URL gambar yang baru
+        }
+
+        const updateData = {
+            ...req.body,
+            imageUrl: imageUrl
+        };
+
+        await Gallery.update(updateData, {
+            where: { id_gallery: req.params.id_gallery }
+        });
+
+        res.status(200).json({ message: 'Gallery berhasil diperbarui' });
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ msg: "Terjadi kesalahan server" });
@@ -56,14 +105,24 @@ async function updateGallery(req, res) {
 async function deleteGallery(req, res) {
     try {
         const id_gallery = req.params.id_gallery;
-        const deleted = await Gallery.destroy({
+        const gallery = await Gallery.findOne({ where: { id_gallery: id_gallery } });
+
+        if (!gallery) {
+            return res.status(404).json({ message: 'Gallery tidak ditemukan' });
+        }
+
+        // Hapus gambar dari Vercel Blob jika URL-nya ada
+        if (gallery.imageUrl) {
+            await del(gallery.imageUrl);
+        }
+
+        // Hapus data dari database
+        await Gallery.destroy({
             where: { id_gallery: id_gallery }
         });
-        if (deleted) {
-            res.status(200).json({ message: 'Gallery deleted successfully' });
-        } else {
-            res.status(404).json({ message: 'Gallery not found' });
-        }
+
+        res.status(200).json({ message: 'Gallery berhasil dihapus' });
+
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ msg: "Terjadi kesalahan server" });
@@ -75,5 +134,6 @@ export {
     getGalleryById,
     createGallery,
     updateGallery,
-    deleteGallery
+    deleteGallery,
+    upload
 };

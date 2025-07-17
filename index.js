@@ -49,6 +49,39 @@ app.use((err, req, res, next) => {
     res.status(500).render('error', { status: 500, message: 'Terjadi kesalahan pada server' });
 });
 
+// --- Endpoint untuk Sitemap Dinamis ---
+app.get('/api/sitemap', async (req, res) => {
+    const baseUrl = 'https://sangubanyuneberdaya.my.id';
+
+    // 1. Daftar halaman statis yang Anda miliki
+    const staticPages = [
+        { loc: '/', changefreq: 'daily', priority: '1.0' },
+        { loc: '/html/profil-desa.html', changefreq: 'monthly', priority: '0.8' },
+        { loc: '/html/struktur-organisasi.html', changefreq: 'monthly', priority: '0.8' },
+        { loc: '/html/gor-kwt.html', changefreq: 'monthly', priority: '0.8' },
+        { loc: '/html/umkm.html', changefreq: 'weekly', priority: '0.9' },
+        { loc: '/html/peta-desa.html', changefreq: 'monthly', priority: '0.7' },
+    ];
+    
+    // 2. Buat konten XML
+    const sitemap = `
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+            ${staticPages.map(page => `
+                <url>
+                    <loc>${baseUrl}${page.loc}</loc>
+                    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+                    <changefreq>${page.changefreq}</changefreq>
+                    <priority>${page.priority}</priority>
+                </url>
+            `).join('')}
+        </urlset>
+    `;
+
+    // 3. Sajikan sebagai file XML
+    res.header('Content-Type', 'application/xml');
+    res.send(sitemap);
+});
+
 // Server
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Server is running on port ${PORT}`);

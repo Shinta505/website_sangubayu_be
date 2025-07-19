@@ -10,18 +10,18 @@ import {
 const router = express.Router();
 
 // Route GET semua UMKM
-router.get("/umkm", getAllUmkm);
+router.get("/", getAllUmkm);
 
 // Route GET UMKM berdasarkan ID
-router.get("/umkm/:id_umkm", getUmkmById);
+router.get("/:id_umkm", getUmkmById);
 
 // Route POST tambah UMKM
-router.post("/umkm", createUmkm);
+router.post("/", createUmkm);
 
 // Route PUT update UMKM
-router.put("/umkm/:id_umkm", updateUmkm);
+router.put("/:id_umkm", updateUmkm);
 
 // Route DELETE hapus UMKM
-router.delete("/umkm/:id_umkm", deleteUmkm);
+router.delete("/:id_umkm", deleteUmkm);
 
 export default router;

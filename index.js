@@ -34,11 +34,11 @@ app.get('/', (req, res) => {
 });
 
 // Routes API
-app.use('/api', AuthRoute);
-app.use('/api', StrukturOrganisasiRoute);
-app.use('/api', UmkmRoute);
-app.use('/api', ProdukRoute);
-app.use('/api', Gallery);
+app.use('/api/login', AuthRoute);
+app.use('/api/struktur-organisasi', StrukturOrganisasiRoute);
+app.use('/api/umkm', UmkmRoute);
+app.use('/api/produk', ProdukRoute);
+app.use('/api/gallery', Gallery);
 
 // Middleware untuk menangani 404 Not Found
 app.use((req, res, next) => {

@@ -28,6 +28,7 @@ app.use(cors({
   origin: [
     'https://adminsangubanyuneberdaya.vercel.app', // Domain Frontend Admin
     'https://sangubanyuneberdaya.my.id'             // Domain Frontend Publik
+    'http://127.0.0.1:5501'
   ]
 }));
 app.use(express.json());

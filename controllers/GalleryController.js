@@ -1,41 +1,10 @@
 import Gallery from '../models/GalleryModel.js';
 import { put, del } from '@vercel/blob';
 import multer from 'multer';
-import heicConvert from 'heic-convert';
 
 // Konfigurasi Multer untuk memproses file di memori
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-
-// --- FUNGSI BANTUAN UNTUK KONVERSI GAMBAR ---
-const convertHeicToJpeg = async (file) => {
-    // Cek jika file adalah HEIC/HEIF dari mimetype atau nama file
-    if (file.mimetype === 'image/heic' || file.mimetype === 'image/heif' || file.originalname.toLowerCase().endsWith('.heic') || file.originalname.toLowerCase().endsWith('.heif')) {
-        try {
-            const outputBuffer = await heicConvert({
-                buffer: file.buffer, // Buffer dari file HEIC
-                format: 'JPEG',      // Format output
-                quality: 0.9         // Kualitas gambar (0 to 1)
-            });
-
-            // Ganti nama file dan buffer asli dengan hasil konversi
-            const newFilename = file.originalname.replace(/\.(heic|heif)$/i, '.jpeg');
-            return {
-                ...file,
-                buffer: outputBuffer,
-                originalname: newFilename,
-                mimetype: 'image/jpeg'
-            };
-        } catch (error) {
-            console.error("Gagal mengonversi HEIC ke JPEG:", error);
-            // Kembalikan file asli jika konversi gagal
-            return file;
-        }
-    }
-    // Jika bukan HEIC/HEIF, kembalikan file asli tanpa perubahan
-    return file;
-};
-
 
 // GET all galleries
 async function getAllGalleries(req, res) {
@@ -71,15 +40,10 @@ async function createGallery(req, res) {
             return res.status(400).json({ msg: "Tidak ada file gambar yang diunggah" });
         }
 
-        // --- PERUBAHAN DI SINI ---
-        // Konversi file jika formatnya HEIC/HEIF
-        const processedFile = await convertHeicToJpeg(req.file);
-
-        // Upload gambar ke Vercel Blob dalam folder 'galeri'
-        const blob = await put(`galeri/${Date.now()}_${processedFile.originalname}`, processedFile.buffer, {
+        // Upload gambar ke Vercel Blob
+        const blob = await put(`galeri/${Date.now()}_${req.file.originalname}`, req.file.buffer, {
             access: 'public',
         });
-        // --- AKHIR PERUBAHAN ---
 
         // Simpan data beserta URL gambar ke database
         const inputResult = {
@@ -110,20 +74,15 @@ async function updateGallery(req, res) {
 
         // Jika ada file baru yang diunggah
         if (req.file) {
-            // --- PERUBAHAN DI SINI ---
-            // Konversi file jika formatnya HEIC/HEIF
-            const processedFile = await convertHeicToJpeg(req.file);
-
             // Hapus gambar lama dari Vercel Blob jika ada
             if (gallery.url_gambar) {
                 await del(gallery.url_gambar);
             }
-            // Unggah gambar baru ke Vercel Blob dalam folder 'galeri'
-            const blob = await put(`galeri/${Date.now()}_${processedFile.originalname}`, processedFile.buffer, {
+            // Unggah gambar baru
+            const blob = await put(`galeri/${Date.now()}_${req.file.originalname}`, req.file.buffer, {
                 access: 'public',
             });
             url_gambar = blob.url; // Gunakan URL gambar yang baru
-            // --- AKHIR PERUBAHAN ---
         }
 
         const updateData = {

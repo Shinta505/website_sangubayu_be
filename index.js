@@ -23,14 +23,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Middleware
-// Middleware
-app.use(cors({
-  origin: [
-    'https://adminsangubanyuneberdaya.vercel.app', // Domain Frontend Admin
-    'https://sangubanyuneberdaya.my.id'             // Domain Frontend Publik
-    'http://127.0.0.1:5501'
-  ]
-}));
+app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static('uploads'));
